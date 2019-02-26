@@ -33,36 +33,7 @@ Ez = boxHeight
 Ex = meterPerPixel
 Ey = meterPerPixel
 
-sdf = etree.Element("sdf", version="1.4")
-world = etree.SubElement(sdf, "world", name="default")
-light = etree.SubElement(world, "light", name="sun", type="directional")
-cast_shadows = etree.SubElement(light, "cast_shadows").text="1"
-diffuse = etree.SubElement(light, "diffuse").text="0.8 0.8 0.8 1"
-specular = etree.SubElement(light, "specular").text="0.1 0.1 0.1 1"
-attenuation = etree.SubElement(light, "attenuation")
-_range = etree.SubElement(attenuation, "range").text="1000"
-constant = etree.SubElement(attenuation, "constant").text="0.9"
-linear = etree.SubElement(attenuation, "linear").text="0.01"
-quadratic = etree.SubElement(attenuation, "quadratic").text="0.001"
-direction = etree.SubElement(light, "direction").text="-0.5 0.5 -1"
-
-#-- Create Floor
-floorEx = Ex * nX
-floorEy = Ey * nY
-floorEz = boxHeight / 8.0  # arbitrary
-
-model = etree.SubElement(world, "model", name="floor")
-pose = etree.SubElement(model, "pose").text=str(floorEx/2.0)+" "+str(floorEy/2.0)+" "+str(-floorEz/2.0)+" 0 0 0"
-static = etree.SubElement(model, "static").text="true"
-link = etree.SubElement(model, "link", name="link")
-collision = etree.SubElement(link, "collision", name="collision")
-geometry = etree.SubElement(collision, "geometry")
-box = etree.SubElement(geometry, "box")
-size = etree.SubElement(box, "size").text=str(floorEx)+" "+ str(floorEy)+" "+str(floorEz)
-visual = etree.SubElement(link, "visual", name="visual")
-geometry = etree.SubElement(visual, "geometry")
-box = etree.SubElement(geometry, "box")
-size = etree.SubElement(box, "size").text=str(floorEx)+" "+ str(floorEy)+" "+str(floorEz)
+robot = etree.Element("robot", name="yetAnotherRobot")
 
 #-- Create Walls
 for iX in range(nX):
@@ -80,20 +51,17 @@ for iX in range(nX):
         z = Ez/2.0  # Add this to raise to floor level (centered by default)
 
         #-- Create box
-        model = etree.SubElement(world, "model", name="box_"+str(iX)+"_"+str(iY))
-        pose = etree.SubElement(model, "pose").text=str(x)+" "+str(y)+" "+str(z)+" 0 0 0"
-        static = etree.SubElement(model, "static").text="true"
-        link = etree.SubElement(model, "link", name="link")
-        collision = etree.SubElement(link, "collision", name="collision")
-        geometry = etree.SubElement(collision, "geometry")
-        box = etree.SubElement(geometry, "box")
-        size = etree.SubElement(box, "size").text=str(Ex)+" "+ str(Ey)+" "+str(Ez)
-        visual = etree.SubElement(link, "visual", name="visual")
-        geometry = etree.SubElement(visual, "geometry")
-        box = etree.SubElement(geometry, "box")
-        size = etree.SubElement(box, "size").text=str(Ex)+" "+ str(Ey)+" "+str(Ez)
+        link = etree.SubElement(robot, "link", name="box_"+str(iX)+"_"+str(iY))
+        visual = etree.SubElement(link, "visual")
+        visual_origin = etree.SubElement(visual, "origin", xyz=str(x)+" "+ str(y)+" "+str(z))
+        visual_geometry = etree.SubElement(visual, "geometry")
+        visual_box = etree.SubElement(visual_geometry, "box", size=str(Ex))
+        collision = etree.SubElement(link, "collision")
+        collision_origin = etree.SubElement(collision, "origin", xyz=str(x)+" "+ str(y)+" "+str(z))
+        collision_geometry = etree.SubElement(collision, "geometry")
+        collision_box = etree.SubElement(collision_geometry, "box", size=str(Ex)+" "+ str(Ey)+" "+str(Ez))
 
-myStr = etree.tostring(sdf, pretty_print=True)
+myStr = etree.tostring(robot, pretty_print=True)
 
 outFile = open('map.urdf', 'w')
 outFile.write(myStr)

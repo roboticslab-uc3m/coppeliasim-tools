@@ -28,12 +28,27 @@ print "columns = Y =",inFile.shape[1]
 # from numpy import transpose
 # inFile = transpose(inFile)
 
-Ez = boxHeight
+Ez = boxHeight  # Box size is actually double the extent
 
 Ex = meterPerPixel
 Ey = meterPerPixel
 
 robot = etree.Element("robot", name="yetAnotherRobot")
+
+#-- Create Floor
+floorEx = Ex * nX
+floorEy = Ey * nY
+floorEz = boxHeight / 8.0  # arbitrary
+
+link = etree.SubElement(robot, "link", name="floor")
+visual = etree.SubElement(link, "visual")
+visual_origin = etree.SubElement(visual, "origin", xyz=str(floorEx/2.0)+" "+ str(floorEy/2.0)+" "+str(-floorEz/2.0))
+visual_geometry = etree.SubElement(visual, "geometry")
+visual_box = etree.SubElement(visual_geometry, "box", size=str(floorEx)+" "+ str(floorEy)+" "+str(floorEz))
+collision = etree.SubElement(link, "collision")
+collision_origin = etree.SubElement(collision, "origin", xyz=str(floorEx/2.0)+" "+ str(floorEy/2.0)+" "+str(-floorEz/2.0))
+collision_geometry = etree.SubElement(collision, "geometry")
+collision_box = etree.SubElement(collision_geometry, "box", size=str(floorEx)+" "+ str(floorEy)+" "+str(floorEz))
 
 #-- Create Walls
 for iX in range(nX):
@@ -45,17 +60,17 @@ for iX in range(nX):
         if inFile[iX][iY] == 0:
             continue
 
-        #-- Add E___/2.0 to each to force begin at 0,0,0 (centered by default)
+        #-- Add E___ to each to force begin at 0,0,0 (centered by default)
         x = Ex/2.0 + iX*meterPerPixel
         y = Ey/2.0 + iY*meterPerPixel
-        z = Ez/2.0  # Add this to raise to floor level (centered by default)
+        z = Ez/2.0 # Ez # Add this to raise to floor level (centered by default)
 
         #-- Create box
         link = etree.SubElement(robot, "link", name="box_"+str(iX)+"_"+str(iY))
         visual = etree.SubElement(link, "visual")
         visual_origin = etree.SubElement(visual, "origin", xyz=str(x)+" "+ str(y)+" "+str(z))
         visual_geometry = etree.SubElement(visual, "geometry")
-        visual_box = etree.SubElement(visual_geometry, "box", size=str(Ex))
+        visual_box = etree.SubElement(visual_geometry, "box", size=str(Ex)+" "+ str(Ey)+" "+str(Ez))
         collision = etree.SubElement(link, "collision")
         collision_origin = etree.SubElement(collision, "origin", xyz=str(x)+" "+ str(y)+" "+str(z))
         collision_geometry = etree.SubElement(collision, "geometry")

@@ -95,6 +95,6 @@ for iX in range(nX):
 
 myStr = etree.tostring(sdf, pretty_print=True)
 
-outFile = open('map.world.xml', 'w')
+outFile = open('map.urdf', 'w')
 outFile.write(myStr)
 outFile.close()

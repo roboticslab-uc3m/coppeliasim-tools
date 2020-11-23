@@ -1,4 +1,4 @@
-# vrep-tools
+# coppeliasim-tools
 
 Install dependencies
 ```bash

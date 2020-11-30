@@ -16,15 +16,15 @@ meterPerPixel = 1 / resolution  # [meter/pixel]
 #-- Program
 from numpy import genfromtxt
 inFile = genfromtxt(inFileStr, delimiter=',')
-print inFile
+print(inFile)
 
 nX = inFile.shape[0]
 nY = inFile.shape[1]
-print "lines = X =",inFile.shape[0]
-print "columns = Y =",inFile.shape[1]
+print("lines = X =",inFile.shape[0])
+print("columns = Y =",inFile.shape[1])
 
 #-- Default to X=rows,Y=columns. Uncomment the next 3 lines to transpose.
-# print "transposing"
+# print("transposing")
 # from numpy import transpose
 # inFile = transpose(inFile)
 
@@ -52,9 +52,9 @@ collision_box = etree.SubElement(collision_geometry, "box", size=str(floorEx)+" 
 
 #-- Create Walls
 for iX in range(nX):
-    #print "iX:",iX
+    #print("iX:",iX)
     for iY in range(nY):
-        #print "* iY:",iY
+        #print("* iY:",iY)
 
         #-- Skip box if map indicates a 0
         if inFile[iX][iY] == 0:
@@ -76,7 +76,7 @@ for iX in range(nX):
         collision_geometry = etree.SubElement(collision, "geometry")
         collision_box = etree.SubElement(collision_geometry, "box", size=str(Ex)+" "+ str(Ey)+" "+str(Ez))
 
-myStr = etree.tostring(robot, pretty_print=True)
+myStr = etree.tostring(robot, pretty_print=True, encoding="unicode")
 
 outFile = open('map.urdf', 'w')
 outFile.write(myStr)
